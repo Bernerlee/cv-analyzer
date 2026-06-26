@@ -1,30 +1,24 @@
 import { auth, provider } from "../lib/firebase";
-import { signInWithPopup } from "firebase/auth";
-import { signOut } from "firebase/auth";
+import { signInWithPopup, signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 export default function Navbar() {
-  const [user] = useAuthState(auth);
-
-  console.log("Current user:", user);
-
-  // const handleLogin = async () => {
-  //   await signInWithRedirect(auth, provider); // ← changed from signInWithPopup
-  // };
+  const [user, loading] = useAuthState(auth);
 
   const handleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-
-      console.log("SUCCESS");
-      console.log(result.user);
-    } catch (err) {
-      console.error(err);
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
     }
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
   };
 
   return (
@@ -40,32 +34,45 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-          style={{ background: "linear-gradient(135deg, #7c3aed, #ec4899)" }}
+          style={{
+            background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+          }}
         >
           CV
         </div>
+
         <span className="text-white font-bold text-lg">CVAnalyzer</span>
       </div>
 
-      {/* Auth */}
+      {/* Authentication */}
       <div>
-        {user ? (
+        {loading ? (
+          <div className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Loading...
+          </div>
+        ) : user ? (
           <div className="flex items-center gap-3">
             <img
-              src={user.photoURL}
-              alt="profile"
-              className="w-8 h-8 rounded-full"
-              style={{ border: "2px solid rgba(167,139,250,0.6)" }}
+              src={user?.photoURL}
+              alt={user?.displayName}
+              className="w-9 h-9 rounded-full"
+              style={{
+                border: "2px solid rgba(167,139,250,0.6)",
+              }}
             />
+
             <span
-              className="text-sm hidden md:block"
-              style={{ color: "rgba(255,255,255,0.7)" }}
+              className="hidden md:block text-sm font-medium"
+              style={{
+                color: "rgba(255,255,255,0.75)",
+              }}
             >
-              {user.displayName}
+              {user?.displayName}
             </span>
+
             <button
               onClick={handleLogout}
-              className="text-sm px-4 py-1.5 rounded-lg transition"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition hover:opacity-80 cursor-pointer"
               style={{
                 color: "#f472b6",
                 border: "1px solid rgba(244,114,182,0.3)",
@@ -78,7 +85,7 @@ export default function Navbar() {
         ) : (
           <button
             onClick={handleLogin}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition hover:scale-105 cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:scale-105 cursor-pointer"
             style={{
               background: "linear-gradient(135deg, #7c3aed, #ec4899)",
               boxShadow: "0 0 20px rgba(124,58,237,0.3)",
@@ -86,7 +93,7 @@ export default function Navbar() {
           >
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt=""
+              alt="Google"
               className="w-4 h-4"
             />
             Sign in with Google
