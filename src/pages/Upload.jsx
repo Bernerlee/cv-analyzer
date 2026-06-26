@@ -29,14 +29,14 @@ export default function Upload() {
     e.preventDefault();
 
     if (!file) return alert("Please upload a CV");
-    if (!user) return alert("Please sign in first");
 
     setIsProcessing(true);
 
     try {
       // 1. Convert PDF to image
       setStatusText("Converting CV to image...");
-      const { file: imageFile, error: imgError } = await convertPdfToImage(file);
+      const { file: imageFile, error: imgError } =
+        await convertPdfToImage(file);
       if (imgError) throw new Error(imgError);
 
       // 2. Upload original PDF to Firebase Storage
@@ -88,8 +88,12 @@ export default function Upload() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Analyze Your CV</h1>
-        <p className="text-gray-500 mb-8">Fill in the job details and upload your CV</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Analyze Your CV
+        </h1>
+        <p className="text-gray-500 mb-8">
+          Fill in the job details and upload your CV
+        </p>
 
         {isProcessing ? (
           <div className="text-center py-20">
@@ -99,7 +103,9 @@ export default function Upload() {
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Company Name</label>
+              <label className="text-sm font-medium text-gray-700">
+                Company Name
+              </label>
               <input
                 type="text"
                 value={companyName}
@@ -111,7 +117,9 @@ export default function Upload() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Job Title</label>
+              <label className="text-sm font-medium text-gray-700">
+                Job Title
+              </label>
               <input
                 type="text"
                 value={jobTitle}
@@ -123,7 +131,9 @@ export default function Upload() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Job Description</label>
+              <label className="text-sm font-medium text-gray-700">
+                Job Description
+              </label>
               <textarea
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
@@ -135,7 +145,9 @@ export default function Upload() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Upload CV</label>
+              <label className="text-sm font-medium text-gray-700">
+                Upload CV
+              </label>
               <FileUploader onFileSelect={setFile} />
             </div>
 
