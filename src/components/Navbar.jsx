@@ -1,9 +1,10 @@
 import { auth, provider } from "../lib/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
+
+import { useAuth } from "../hooks/useAuth";
 
 export default function Navbar() {
-  const [user, loading] = useAuthState(auth);
+  const { user, loading } = useAuth();
 
   const handleLogin = async () => {
     try {

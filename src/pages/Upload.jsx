@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../lib/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { db, storage } from "../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -9,6 +7,7 @@ import Navbar from "../components/Navbar";
 import FileUploader from "../components/FileUploader";
 import { convertPdfToImage } from "../lib/pdf2img";
 import { analyzeResume } from "../lib/analyzeResume";
+import { useAuth } from "../hooks/useAuth";
 
 // Simple unique ID generator
 function generateId() {
@@ -17,7 +16,8 @@ function generateId() {
 
 export default function Upload() {
   const navigate = useNavigate();
-  const [user] = useAuthState(auth);
+
+  const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
@@ -153,7 +153,7 @@ export default function Upload() {
 
             <button
               type="submit"
-              className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition cursor-pointer"
             >
               Analyze My CV
             </button>

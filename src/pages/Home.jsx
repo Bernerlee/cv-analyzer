@@ -1,19 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { auth, provider } from "../lib/firebase";
 import { signInWithPopup } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
+
 import Navbar from "../components/Navbar";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [user, loading] = useAuthState(auth);
-
-  // If already logged in, go straight to the upload page
-  // useEffect(() => {
-  //   if (!loading && user) {
-  //     navigate("/upload");
-  //   }
-  // }, [user, loading, navigate]);
+  const { user, loading } = useAuth();
 
   const handleGetStarted = async () => {
     try {
