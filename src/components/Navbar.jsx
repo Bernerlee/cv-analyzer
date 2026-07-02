@@ -1,24 +1,22 @@
-import { auth, provider } from "../lib/firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
-
+import { signInWithGoogle, signOutUser } from "../lib/auth";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Navbar() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   const handleLogin = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
+    const { error } = await signInWithGoogle();
+
+    if (error) {
+      console.error(error.message);
     }
   };
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Logout Error:", error);
+    const { error } = await signOutUser();
+
+    if (error) {
+      console.error(error.message);
     }
   };
 
@@ -31,76 +29,49 @@ export default function Navbar() {
         borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      {/* Logo */}
       <div className="flex items-center gap-2">
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold"
           style={{
-            background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+            background: "linear-gradient(135deg,#7c3aed,#ec4899)",
           }}
         >
           CV
         </div>
 
-        <span className="text-white font-bold text-lg">CVAnalyzer</span>
+        <span className="text-white font-bold text-xl">CVPilot</span>
       </div>
 
-      {/* Authentication */}
-      <div>
-        {loading ? (
-          <div className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-            Loading...
-          </div>
-        ) : user ? (
-          <div className="flex items-center gap-3">
-            <img
-              src={user?.photoURL}
-              alt={user?.displayName}
-              className="w-9 h-9 rounded-full"
-              style={{
-                border: "2px solid rgba(167,139,250,0.6)",
-              }}
-            />
+      {user ? (
+        <div className="flex items-center gap-3">
+          <img
+            src={user.user_metadata.avatar_url}
+            alt="avatar"
+            className="w-9 h-9 rounded-full"
+          />
 
-            <span
-              className="hidden md:block text-sm font-medium"
-              style={{
-                color: "rgba(255,255,255,0.75)",
-              }}
-            >
-              {user?.displayName}
-            </span>
+          <span className="text-white hidden md:block">
+            {user.user_metadata.full_name}
+          </span>
 
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition hover:opacity-80 cursor-pointer"
-              style={{
-                color: "#f472b6",
-                border: "1px solid rgba(244,114,182,0.3)",
-                background: "rgba(244,114,182,0.1)",
-              }}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
           <button
-            onClick={handleLogin}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:scale-105 cursor-pointer"
-            style={{
-              background: "linear-gradient(135deg, #7c3aed, #ec4899)",
-              boxShadow: "0 0 20px rgba(124,58,237,0.3)",
-            }}
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600"
           >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-              className="w-4 h-4"
-            />
-            Sign in with Google
+            Logout
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        <button
+          onClick={handleLogin}
+          className="px-5 py-2 rounded-xl text-white font-semibold"
+          style={{
+            background: "linear-gradient(135deg,#7c3aed,#ec4899)",
+          }}
+        >
+          Sign in with Google
+        </button>
+      )}
     </nav>
   );
 }

@@ -1,26 +1,39 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, provider } from "../lib/firebase";
-import { signInWithPopup } from "firebase/auth";
 
 import Navbar from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
+import { signInWithGoogle } from "../lib/auth";
 
 export default function Home() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
+  // Automatically redirect authenticated users
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/upload");
+    }
+  }, [loading, user, navigate]);
+
   const handleGetStarted = async () => {
     try {
-      // If already logged in, skip the popup
+      // Already logged in
       if (user) {
         navigate("/upload");
         return;
       }
 
-      await signInWithPopup(auth, provider);
-      navigate("/upload");
+      const { error } = await signInWithGoogle();
+
+      if (error) {
+        console.error("Google Sign-In Error:", error.message);
+      }
+
+      // No navigate() here.
+      // Supabase redirects to Google and comes back automatically.
     } catch (error) {
-      console.error("Google Sign-In Error:", error);
+      console.error(error);
     }
   };
 
@@ -47,7 +60,6 @@ export default function Home() {
       <Navbar />
 
       <div className="flex flex-col items-center justify-center min-h-[90vh] text-center px-4">
-        {/* Badge */}
         <div
           className="mb-6 px-4 py-2 rounded-full text-sm font-semibold"
           style={{
@@ -59,7 +71,6 @@ export default function Home() {
           ✨ AI-Powered Resume Analysis
         </div>
 
-        {/* Heading */}
         <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
           Land Your{" "}
           <span
@@ -73,7 +84,6 @@ export default function Home() {
           </span>
         </h1>
 
-        {/* Subtitle */}
         <p
           className="text-lg md:text-xl mb-10 max-w-2xl"
           style={{ color: "rgba(255,255,255,0.65)" }}
@@ -82,7 +92,6 @@ export default function Home() {
           matches, and tailored improvement tips — all in seconds.
         </p>
 
-        {/* CTA */}
         <button
           onClick={handleGetStarted}
           className="px-10 py-4 rounded-2xl text-lg font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
@@ -94,7 +103,6 @@ export default function Home() {
           {user ? "Continue to Upload →" : "Analyze My CV for Free →"}
         </button>
 
-        {/* Stats */}
         <div className="flex gap-8 mt-16 flex-wrap justify-center">
           {[
             { value: "98%", label: "Accuracy Rate" },
@@ -113,7 +121,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 max-w-4xl w-full px-4">
           {[
             {
